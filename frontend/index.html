@@ -1,1 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Messages App</title>
+</head>
 
+<body>
+    <h1>Messages</h1>
+
+    <input type="text" id="msg" placeholder="Enter message" />
+    <button onclick="send()">Send</button>
+
+    <ul id="list"></ul>
+
+    <script>
+        const api = "http://localhost:30007/messages";
+
+        function load() {
+            fetch(api)
+                .then(response => response.json())
+                .then(data => {
+                    const list = document.getElementById("list");
+                    list.innerHTML = "";
+
+                    data.forEach(item => {
+                        const li = document.createElement("li");
+                        li.textContent = item[0];
+                        list.appendChild(li);
+                    });
+                });
+        }
+
+        function send() {
+            const msgInput = document.getElementById("msg");
+
+            fetch(api, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    text: msgInput.value
+                })
+            }).then(() => {
+                msgInput.value = "";
+                load();
+            });
+        }
+
+        load();
+    </script>
+</body>
+</html>
